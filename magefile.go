@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	mixinName    = "skeletor"
-	mixinPackage = "get.porter.sh/mixin/skeletor"
+	mixinName    = "packer"
+	mixinPackage = "get.porter.sh/mixin/packer"
 	mixinBin     = "bin/mixins/" + mixinName
 )
 

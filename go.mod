@@ -1,4 +1,4 @@
-module get.porter.sh/mixin/skeletor
+module get.porter.sh/mixin/packer
 
 go 1.17
 

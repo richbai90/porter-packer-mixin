@@ -1,15 +1,21 @@
 //go:generate packr2
-package skeletor
+package packer
 
 import (
 	"get.porter.sh/porter/pkg/context"
 )
 
-const defaultClientVersion string = "v0.0.0"
+const defaultDockerVersion = "20.10.7"
+const defaultImagePath = "$HOME"
 
 type Mixin struct {
 	*context.Context
 	ClientVersion string
+	PackerFile string
+	BuildArgs string
+	DockerVersion string
+	TargetOS string
+	ImagePath string
 	//add whatever other context/state is needed here
 }
 
@@ -17,7 +23,8 @@ type Mixin struct {
 func New() (*Mixin, error) {
 	return &Mixin{
 		Context:       context.New(),
-		ClientVersion: defaultClientVersion,
+		ClientVersion: defaultDockerVersion,
+		ImagePath: defaultImagePath,
 	}, nil
 
 }

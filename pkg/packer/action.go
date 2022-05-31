@@ -1,6 +1,8 @@
-package skeletor
+package packer
 
 import (
+	"fmt"
+
 	"get.porter.sh/porter/pkg/exec/builder"
 )
 
@@ -14,7 +16,7 @@ type Action struct {
 
 // MarshalYAML converts the action back to a YAML representation
 // install:
-//   skeletor:
+//   packer:
 //     ...
 func (a Action) MarshalYAML() (interface{}, error) {
 	return map[string]interface{}{a.Name: a.Steps}, nil
@@ -27,7 +29,7 @@ func (a Action) MakeSteps() interface{} {
 
 // UnmarshalYAML takes any yaml in this form
 // ACTION:
-// - skeletor: ...
+// - packer: ...
 // and puts the steps into the Action.Steps field
 func (a *Action) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	results, err := builder.UnmarshalAction(unmarshal, a)
@@ -57,7 +59,7 @@ func (a Action) GetSteps() []builder.ExecutableStep {
 }
 
 type Step struct {
-	Instruction `yaml:"skeletor"`
+	Instruction `yaml:"packer"`
 }
 
 // Actions is a set of actions, and the steps, passed from Porter.
@@ -66,12 +68,12 @@ type Actions []Action
 // UnmarshalYAML takes chunks of a porter.yaml file associated with this mixin
 // and populates it on the current action set.
 // install:
-//   skeletor:
+//   packer:
 //     ...
-//   skeletor:
+//   packer:
 //     ...
 // upgrade:
-//   skeletor:
+//   packer:
 //     ...
 func (a *Actions) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	results, err := builder.UnmarshalAction(unmarshal, Action{})
@@ -99,13 +101,15 @@ type Instruction struct {
 	Name        string   `yaml:"name"`
 	Description string   `yaml:"description"`
 	WorkingDir  string   `yaml:"dir,omitempty"`
-	Arguments   []string `yaml:"arguments,omitempty"`
+	ClientVersion string `yaml:"clientVersion,omitempty"`
+	PackerFile string `yaml:"packerFile"`
+	BuildArgs string `yaml:"buildArgs,omitempty"`
+	TargetOS string `yaml:"targetOS"`
+	ImagePath string `yaml:"imagePath,omitempty"`
 
 	// Useful when the CLI you are calling wants some arguments to come after flags
 	// Arguments are passed first, then Flags, then SuffixArguments.
-	SuffixArguments []string `yaml:"suffix-arguments,omitempty"`
-
-	Flags          builder.Flags `yaml:"flags,omitempty"`
+	
 	Outputs        []Output      `yaml:"outputs,omitempty"`
 	SuppressOutput bool          `yaml:"suppress-output,omitempty"`
 
@@ -116,7 +120,7 @@ type Instruction struct {
 }
 
 func (s Instruction) GetCommand() string {
-	return "skeletor"
+	return "/bin/sh -c"
 }
 
 func (s Instruction) GetWorkingDir() string {
@@ -124,15 +128,15 @@ func (s Instruction) GetWorkingDir() string {
 }
 
 func (s Instruction) GetArguments() []string {
-	return s.Arguments
+	return []string {fmt.Sprintf(`"/%s.sh"`, s.Name)}
 }
 
 func (s Instruction) GetSuffixArguments() []string {
-	return s.SuffixArguments
+	return []string {}
 }
 
-func (s Instruction) GetFlags() builder.Flags {
-	return s.Flags
+func (s Instruction) GetFlags() builder.Flags  {
+	return builder.Flags {}
 }
 
 func (s Instruction) SuppressesOutput() bool {

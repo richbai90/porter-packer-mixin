@@ -1,4 +1,4 @@
-package skeletor
+package packer
 
 import (
 	"get.porter.sh/porter/pkg/exec/builder"

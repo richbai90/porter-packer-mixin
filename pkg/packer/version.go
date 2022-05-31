@@ -1,7 +1,7 @@
-package skeletor
+package packer
 
 import (
-	"get.porter.sh/mixin/skeletor/pkg"
+	"get.porter.sh/mixin/packer/pkg"
 	"get.porter.sh/porter/pkg/mixin"
 	"get.porter.sh/porter/pkg/pkgmgmt"
 	"get.porter.sh/porter/pkg/porter/version"
@@ -9,7 +9,7 @@ import (
 
 func (m *Mixin) PrintVersion(opts version.Options) error {
 	metadata := mixin.Metadata{
-		Name: "skeletor",
+		Name: "packer",
 		VersionInfo: pkgmgmt.VersionInfo{
 			Version: pkg.Version,
 			Commit:  pkg.Commit,
