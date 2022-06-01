@@ -41,6 +41,9 @@ func (a *Action) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		a.Name = actionName
 		for _, result := range action {
 			step := result.(*[]Step)
+			for i, _ := range *step {
+				(*step)[i].Instruction.Parent = actionName
+			}
 			a.Steps = append(a.Steps, *step...)
 		}
 		break // There is only 1 action
@@ -84,6 +87,9 @@ func (a *Actions) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	for actionName, action := range results {
 		for _, result := range action {
 			s := result.(*[]Step)
+			for _,step := range *s {
+				step.Instruction.Parent = actionName
+			}
 			*a = append(*a, Action{
 				Name:  actionName,
 				Steps: *s,
@@ -106,6 +112,7 @@ type Instruction struct {
 	BuildArgs string `yaml:"buildArgs,omitempty"`
 	TargetOS string `yaml:"targetOS"`
 	ImagePath string `yaml:"imagePath,omitempty"`
+	Parent    string
 
 	// Useful when the CLI you are calling wants some arguments to come after flags
 	// Arguments are passed first, then Flags, then SuffixArguments.
@@ -120,7 +127,7 @@ type Instruction struct {
 }
 
 func (s Instruction) GetCommand() string {
-	return "/bin/sh -c"
+	return "/bin/sh"
 }
 
 func (s Instruction) GetWorkingDir() string {
@@ -128,7 +135,7 @@ func (s Instruction) GetWorkingDir() string {
 }
 
 func (s Instruction) GetArguments() []string {
-	return []string {fmt.Sprintf(`"/%s.sh"`, s.Name)}
+	return []string {"-c", fmt.Sprintf(`'%s.sh'`, s.Parent)}
 }
 
 func (s Instruction) GetSuffixArguments() []string {
