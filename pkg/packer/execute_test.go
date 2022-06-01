@@ -24,11 +24,12 @@ func TestMixin_Execute(t *testing.T) {
 		wantOutput  string // Name of output that you expect to be created
 		wantCommand string // Full command that you expect to be called based on the input YAML
 	}{
-		{"action", "testdata/step-input.yaml", "VICTORY",
-			"packer man-e-faces --species human"},
+		{"action", "testdata/step-input.yaml", "PASS",
+			"sh -c install.sh"},
 	}
 
 	defer os.Unsetenv(test.ExpectedCommandEnv)
+	os.Setenv("PORTER_ENV", "DEV")
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			m := NewTestMixin(t)

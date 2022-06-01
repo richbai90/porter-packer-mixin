@@ -2,6 +2,7 @@ package packer
 
 import (
 	"fmt"
+	"os"
 
 	"get.porter.sh/porter/pkg/exec/builder"
 )
@@ -127,6 +128,10 @@ type Instruction struct {
 }
 
 func (s Instruction) GetCommand() string {
+	if(os.Getenv("PORTER_ENV") == "DEV") {
+		return "sh"
+	}
+
 	return "/bin/sh"
 }
 
