@@ -8,5 +8,5 @@ install:
       flags:
         species: "human"
       outputs:
-        - name: "VICTORY"
+        - name: "PASS"
           jsonPath: "$Id"
